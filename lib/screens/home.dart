@@ -37,6 +37,12 @@ class _HomeScreenState extends State<HomeScreen> {
         isCompleted: false),
   ];
 
+  void addNewTask(Task newTask) {
+    setState(() {
+      todo.add(newTask);
+    });
+  }
+
   List<Task> complited = [
     Task(
         type: TaskType.note,
@@ -111,7 +117,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => const AddNewTasksScreen(),
+                        builder: (context) => AddNewTasksScreen(
+                          addNewTask: (newTask) => addNewTask(newTask),
+                        ),
                       ),
                     );
                   },

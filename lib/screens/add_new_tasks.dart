@@ -1,9 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:todo_flutter/constants/color.dart';
+import 'package:todo_flutter/constants/task_type.dart';
 
-class AddNewTasksScreen extends StatelessWidget {
-  const AddNewTasksScreen({super.key});
+import '../model/task.dart';
+
+class AddNewTasksScreen extends StatefulWidget {
+  const AddNewTasksScreen({super.key, required this.addNewTask});
+  final void Function(Task newTask) addNewTask;
+
+  @override
+  State<AddNewTasksScreen> createState() => _AddNewTasksScreenState();
+}
+
+class _AddNewTasksScreenState extends State<AddNewTasksScreen> {
+  TextEditingController titleController = TextEditingController();
+  TextEditingController dateController = TextEditingController();
+  TextEditingController timeController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+
+  TaskType taskType = TaskType.note;
 
   @override
   Widget build(BuildContext context) {
@@ -53,12 +69,13 @@ class AddNewTasksScreen extends StatelessWidget {
               padding: EdgeInsets.only(top: 10.0),
               child: Text("Task Title"),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(
+            Padding(
+              padding: const EdgeInsets.symmetric(
                 horizontal: 40,
               ),
               child: TextField(
-                decoration: InputDecoration(
+                controller: titleController,
+                decoration: const InputDecoration(
                   filled: true,
                   fillColor: Colors.white,
                 ),
@@ -78,6 +95,9 @@ class AddNewTasksScreen extends StatelessWidget {
                           content: Text("Category selected"),
                         ),
                       );
+                      setState(() {
+                        taskType = TaskType.note;
+                      });
                     },
                     child: Image.asset("lib/assets/images/category_1.png"),
                   ),
@@ -89,6 +109,9 @@ class AddNewTasksScreen extends StatelessWidget {
                           content: Text("Category selected"),
                         ),
                       );
+                      setState(() {
+                        taskType = TaskType.calendar;
+                      });
                     },
                     child: Image.asset("lib/assets/images/category_2.png"),
                   ),
@@ -100,24 +123,28 @@ class AddNewTasksScreen extends StatelessWidget {
                           content: Text("Category selected"),
                         ),
                       );
+                      setState(() {
+                        taskType = TaskType.contest;
+                      });
                     },
                     child: Image.asset("lib/assets/images/category_3.png"),
                   ),
                 ],
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(top: 10.0),
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0),
               child: Row(
                 children: [
                   Expanded(
                     child: Column(
                       children: [
-                        Text("Date"),
+                        const Text("Date"),
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: TextField(
-                            decoration: InputDecoration(
+                            controller: dateController,
+                            decoration: const InputDecoration(
                                 filled: true, fillColor: Colors.white),
                           ),
                         ),
@@ -127,11 +154,12 @@ class AddNewTasksScreen extends StatelessWidget {
                   Expanded(
                     child: Column(
                       children: [
-                        Text("Time"),
+                        const Text("Time"),
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: TextField(
-                            decoration: InputDecoration(
+                            controller: timeController,
+                            decoration: const InputDecoration(
                                 filled: true, fillColor: Colors.white),
                           ),
                         )
@@ -143,20 +171,29 @@ class AddNewTasksScreen extends StatelessWidget {
             ),
             const Padding(
               padding: EdgeInsets.only(top: 10.0),
-              child: Text("Notes"),
+              child: Text("Descriptions"),
             ),
-            const SizedBox(
+            SizedBox(
               height: 300,
               child: TextField(
+                controller: descriptionController,
                 expands: true,
                 maxLines: null,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     filled: true, fillColor: Colors.white, isDense: true),
               ),
             ),
             ElevatedButton(
-              onPressed: () {},
-              child: Text("Save"),
+              onPressed: () {
+                Task newTask = Task(
+                    type: taskType,
+                    title: titleController.text,
+                    description: descriptionController.text,
+                    isCompleted: false);
+                widget.addNewTask(newTask);
+                Navigator.pop(context);
+              },
+              child: const Text("Save"),
             ),
           ],
         ),
