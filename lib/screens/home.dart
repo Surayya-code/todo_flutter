@@ -4,6 +4,7 @@ import 'package:todo_flutter/constants/color.dart';
 import 'package:todo_flutter/constants/task_type.dart';
 import 'package:todo_flutter/header_item.dart';
 import 'package:todo_flutter/screens/add_new_tasks.dart';
+import 'package:todo_flutter/service/todo_service.dart';
 import 'package:todo_flutter/todo_item.dart';
 
 import '../model/task.dart';
@@ -60,6 +61,8 @@ class _HomeScreenState extends State<HomeScreen> {
     double deviceWidth = MediaQuery.of(context).size.width;
     double deviceHeight = MediaQuery.of(context).size.height;
 
+    TodoService todoService = TodoService();
+
     return MaterialApp(
       home: SafeArea(
         child: Scaffold(
@@ -73,18 +76,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                   child: SingleChildScrollView(
-                    child: ListView.builder(
-                        shrinkWrap: true,
-                        primary: false,
-                        // ListView.builder(
-                        // shrinkWrap: true,
-                        // primary: false,
-                        itemCount: todo.length,
-                        itemBuilder: (context, index) {
-                          return TodoItem(
-                            task: todo[index],
-                          );
-                        }),
+                    child: FutureBuilder(
+                      future: todoService.getUncompletedTodos(),
+                      builder: (context, snapshot) {
+                        if (snapshot.data == null) {
+                          return const CircularProgressIndicator();
+                        } else {
+                          return ListView.builder(
+                              shrinkWrap: true,
+                              primary: false,
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: (context, index) {
+                                return TodoItem(
+                                  task: snapshot.data![index],
+                                );
+                              });
+                        }
+                        ;
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -104,13 +114,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                   child: SingleChildScrollView(
-                      child: ListView.builder(
-                          shrinkWrap: true,
-                          primary: false,
-                          itemCount: complited.length,
-                          itemBuilder: (context, index) {
-                            return TodoItem(task: complited[index]);
-                          })),
+                    child: FutureBuilder(
+                      future: todoService.getCompletedTodos(),
+                      builder: (context, snapshot) {
+                        if (snapshot.data == null) {
+                          return const CircularProgressIndicator();
+                        } else {
+                          return ListView.builder(
+                              shrinkWrap: true,
+                              primary: false,
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: (context, index) {
+                                return TodoItem(
+                                  task: snapshot.data![index],
+                                );
+                              });
+                        }
+                      },
+                    ),
+                  ),
                 ),
               ),
               ElevatedButton(
