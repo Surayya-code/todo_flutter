@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:todo_flutter/constants/task_type.dart';
 
 import 'model/todo.dart';
 

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:todo_flutter/constants/color.dart';
 import 'package:todo_flutter/constants/task_type.dart';
+import 'package:todo_flutter/model/todo.dart';
+import 'package:todo_flutter/service/todo_service.dart';
 
 import '../model/task.dart';
 
@@ -15,9 +17,10 @@ class AddNewTasksScreen extends StatefulWidget {
 
 class _AddNewTasksScreenState extends State<AddNewTasksScreen> {
   TextEditingController titleController = TextEditingController();
-  TextEditingController dateController = TextEditingController();
+  TextEditingController userIdController = TextEditingController();
   TextEditingController timeController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
+  TodoService todoService = TodoService();
 
   TaskType taskType = TaskType.note;
 
@@ -139,11 +142,11 @@ class _AddNewTasksScreenState extends State<AddNewTasksScreen> {
                   Expanded(
                     child: Column(
                       children: [
-                        const Text("Date"),
+                        const Text("User ID"),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: TextField(
-                            controller: dateController,
+                            controller: userIdController,
                             decoration: const InputDecoration(
                                 filled: true, fillColor: Colors.white),
                           ),
@@ -185,12 +188,13 @@ class _AddNewTasksScreenState extends State<AddNewTasksScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                Task newTask = Task(
-                    type: taskType,
-                    title: titleController.text,
-                    description: descriptionController.text,
-                    isCompleted: false);
-                widget.addNewTask(newTask);
+                saveTodo();
+                // Task newTask = Task(
+                //     type: taskType,
+                //     title: titleController.text,
+                //     description: descriptionController.text,
+                //     isCompleted: false);
+                // widget.addNewTask(newTask);
                 Navigator.pop(context);
               },
               child: const Text("Save"),
@@ -199,5 +203,14 @@ class _AddNewTasksScreenState extends State<AddNewTasksScreen> {
         ),
       ),
     ));
+  }
+
+  void saveTodo() {
+    Todo newTodo = Todo(
+        id: -1,
+        todo: titleController.text,
+        completed: false,
+        userId: int.parse(userIdController.text));
+    todoService.addTodo(newTodo);
   }
 }
